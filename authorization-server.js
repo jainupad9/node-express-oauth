@@ -60,12 +60,12 @@ app.get("/authorize", (req, res) => {
 	const scopes = query.scope.split(" ");
 	const requestId = randomString();	
 
-	if (!clients.hasOwnProperty(clientId)){
+	if (!clientId || !clients.hasOwnProperty(clientId)){
 		res.status(401);
 		return;
 	}
 
-	if (!containsAll(scopes, clients[clientId].scopes)){
+	if (!containsAll(clients[clientId].scopes, scopes)){
 		res.status(401);
 		return;	
 	}
@@ -106,7 +106,7 @@ app.post("/approve", (req, res) => {
 	url.searchParams.append("code", randomCode);
 	url.searchParams.append("state", clientRequest.code);
 
-	res.redirect(url);
+	res.redirect(url.toString());
 
 	res.status(200);
 });
@@ -118,7 +118,7 @@ app.post("/token", (req, res) => {
 	}
 	const {clientId, clientSecret} = decodeAuthCredentials(req.headers.authorization);
 
-	if (!clients.hasOwnProperty(clientId) || clients[clientId].clientSecret !== clientSecret){
+	if (!clientId || !clientSecret || !clients.hasOwnProperty(clientId) || clients[clientId].clientSecret !== clientSecret){
 		res.status(401);
 		return;
 	}
