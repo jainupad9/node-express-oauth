@@ -3,7 +3,7 @@ const express = require("express")
 const bodyParser = require("body-parser")
 const jwt = require("jsonwebtoken")
 const {
-	randomString,
+	deleteAllKeys,
 	containsAll,
 	decodeAuthCredentials,
 	timeout,
@@ -55,9 +55,9 @@ app.use(bodyParser.urlencoded({ extended: true }))
 Your code here
 */
 app.get("/authorize", (req, res) => {
-	const query = url.parse(req.url, true).query;
+	const query = req.query;
 	const clientId = query.client_id;
-	const scopes = query.scopes.split(" ");
+	const scopes = query.scope.split(" ");
 	const requestId = randomString();	
 
 	if (!clients.hasOwnProperty(clientId)){
@@ -94,8 +94,8 @@ app.post("/approve", (req, res) => {
 		return;
 	}
 
-	const clientRequest = request[requestId];
-	delete request[requestId];
+	const clientRequest = requests[requestId];
+	delete requests[requestId];
 
 	authorizationCodes[randomCode] = {
 		userName,
